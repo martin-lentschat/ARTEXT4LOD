@@ -62,9 +62,17 @@ def findSegment(caption, name):
     res = []
     file = open('corpus/'+name+'.xml', 'r', encoding='utf-8')
     soup = BeautifulSoup(file, 'html.parser')
-    # caption = re.sub('Table \d+ .', '', caption)
     res = recurFind(res, soup, caption, 0)
     return res
+
+
+def completeArgs(relation, args):
+    df = pd.read_csv(r'input_files\naryrelations.csv', encoding='utf-8')
+    candi = df[df.Relation == re.sub(' ', '_', relation.lower())].Argument.tolist()
+    for c in candi:
+        if c not in args and c != re.sub('_relation', '', re.sub(' ', '_', relation.lower())):
+            args[c] = ['', '']
+    return args
 
 
 def parse_tables():
@@ -124,7 +132,7 @@ def parse_tables():
 
                             relation_type.append(relation['type'])
                             result_arg.append(arg_resultat)
-                            args.append(arg_instance)
+                            args.append(completeArgs(relation['type'], arg_instance))
                             table_name.append(re.findall('Table \d+', str(soup))[0])
                             caption.append(cap)
                             segment.append(findSegment(re.findall('Table \d+', str(soup))[0], file))
