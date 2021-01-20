@@ -1,0 +1,10 @@
+<qc type="PackNumber">		->		<qc type="PackNumber" unit="One">
+
+<qc type="PackNumber" unit="One">		->		<sc type="Packaging">
+
+<ai type="Packaging" id="0">	->	<ai type="Low Density Polyethylene" id="0"> </ai>
+
+ajouter l'emballage dans les ri Impact_factor_component
+
+erreur a chaque ligne colonne: décaler d'une colonne le ai component pour que il corresponde à la colonne des MMT
+
