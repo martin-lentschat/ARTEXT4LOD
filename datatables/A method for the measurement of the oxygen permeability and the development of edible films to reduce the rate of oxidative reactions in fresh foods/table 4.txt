@@ -1,7 +1,0 @@
-<ri type="Permeability_relation" id="0">	->	<ri type="O2 Permeability_relation" id="0">
-
-<sc type="Matrix"> Antioxydant </sc>	->	<sc type="Impact_factor_component"> Antioxydent </sc>
-
-Permeability_relation	->	Permeability_Relation
-
-ajout des exponent

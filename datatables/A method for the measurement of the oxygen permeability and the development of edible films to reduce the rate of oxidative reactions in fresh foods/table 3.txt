@@ -1,9 +1,0 @@
-<ai type="Thickness" id="0"> </ai>	->	a ajouter dans les relations de perm
-
-<ri type="O2 Permeability" id="0">	->	<ri type="O2 Permeability_relation" id="0">
-
-<aii type="Impact_factor_component" > </aii>	->	<aii type="SA" > </aii>
-
-Permeability_relation	->	Permeability_Relation
-
-ajout des attributs exponent
