@@ -1,0 +1,3 @@
+<aii type="XXX" id="0"> <aii>	->	ajoutés dans les RI impact_factor_component_relation avec le composant correspondant
+
+<ai type="type="...	->	<ai type="...

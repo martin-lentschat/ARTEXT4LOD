@@ -1,0 +1,15 @@
+<qc type="CO2 Permeability" unit="1E-10 By Cubic Centimeter By Centimeter Per Square Centimeter Per Second Per Centimeter Mercury">	->	<qc type="CO2 Permeability" unit="barrer">
+<qc type="Permeability" unit="1E-10 By Cubic Centimeter By Centimeter Per Square Centimeter Per Second Per Centimeter Mercury">		->	<qc type="Permeability" unit="barrer">
+<qc type="CO2 Permeability" unit="1E-10 By Cubic Centimeter By Centimeter Per Square Centimeter Per Second Per Centimeter Mercury">	->	<qc type="CO2 Permeability" unit="barrer">
+
+
+<rc type="Impact_factor_component"> </rc>	->	<rc type="Impact_factor_component_relation"> </rc>
+
+<qc type="PackNumber>	->	<qc type="PackNumber" unit="One">
+
+<aii ...> </ai>	->	<aii ...> </aii>
+
+un id de packnumber dans un ri ne correspond pas à celui dans les ai
+
+
+A FAIRE : ajouter l'argument thickness dans les relation de permeabilité
