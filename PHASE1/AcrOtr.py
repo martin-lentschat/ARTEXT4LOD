@@ -1,15 +1,12 @@
 # coding: utf-8
 from __future__ import unicode_literals
 
-"""
-"""
-import os
 import re
-
+import os
 import nltk
 import pandas as pd
-from nltk.corpus import stopwords
 from tqdm import tqdm
+from nltk.corpus import stopwords
 
 
 # dice score between a candidate acronym and the first letters of the considered long form
@@ -17,7 +14,7 @@ def calculateScore(acronym, long):
     acronym = re.sub('\\d', '', acronym.lower())
     k = [i[0] for i in re.split('\\W', long) if i]
     s = 0
-    p = len(acronym) + len(k)
+    p = len(acronym)+len(k)
     for i in acronym:
         if i in k:
             s += 1
@@ -26,11 +23,11 @@ def calculateScore(acronym, long):
     return s
 
 
-# delete the stop-words for score computation
+# delete the stop-words for score calculation
 def cleanSW(t):
     for i in set(stopwords.words('english')):
-        t = re.sub(r'\A *?\b' + i + r'\b', '', t)
-        t = re.sub(r'\b' + i + r'\b$', '', t)
+        t = re.sub(r'\A *?\b'+i+r'\b', '', t)
+        t = re.sub(r'\b'+i+r'\b$', '', t)
         t = re.sub(r' +', ' ', t)
     t = t.lower()
     return t
@@ -51,8 +48,7 @@ def getNP(w, s):
     np = []
     duo = []
     sent = nltk.word_tokenize(s)
-    grammar = 'NP: {<JJ|JJR|JJS|NN|NNS|NNP|NNPS|CC|VBN>*<NN|NNS|NNP|NNPS>' \
-              '+<JJ|JJR|JJS|NN|NNS|NNP|NNPS|CC|VBN>*}'
+    grammar = 'NP: {<JJ|JJR|JJS|NN|NNS|NNP|NNPS|CC|VBN>*<NN|NNS|NNP|NNPS>+<JJ|JJR|JJS|NN|NNS|NNP|NNPS|CC|VBN>*}'
     patt = nltk.RegexpParser(grammar)
     for i in patt.parse(nltk.pos_tag(sent)).subtrees(filter=lambda t: t.label() == 'NP'):
         if w in ' '.join([x[0] for x in i.leaves()]):
@@ -121,11 +117,9 @@ def reduceDF(df, threshold):
                 acro.append(d[1])
                 score.append(d[-1])
                 phrase.append(i.Sentence)
-    df2 = pd.DataFrame({'Type': kind, 'Node': node, 'Term': term, 'LongForm': long, 'Acronym': acro,
-                        'Score': score,
+    df2 = pd.DataFrame({'Type': kind, 'Node': node, 'Term': term, 'LongForm': long, 'Acronym': acro, 'Score': score,
                         'Sentence': phrase}
-                       ).sort_values(['Score'], ascending=False).drop_duplicates(['LongForm'],
-                                                                                 keep='first')
+                       ).sort_values(['Score'], ascending=False).drop_duplicates(['LongForm'], keep='first')
     return df2
 
 
@@ -146,8 +140,7 @@ def addAcroFind(voca, corp, fastr, threshold):
     for i in voca.itertuples():
         for j in kept.itertuples():
             if i.Node == j.Node:
-                voca.at[i.Index, 'Acro' + j.Type] = voca.at[i.Index, 'Acro' + j.Type] + [
-                    [j.Acronym, j.LongForm, j.Score]]
+                voca.at[i.Index, 'Acro' + j.Type] = voca.at[i.Index, 'Acro'+j.Type]+[[j.Acronym, j.LongForm, j.Score]]
     return voca
 
 
