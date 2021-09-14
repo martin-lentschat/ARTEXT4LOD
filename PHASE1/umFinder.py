@@ -18,8 +18,7 @@ def jaccard_indice(list1, list2):
 
 
 def similarity_extended(list1, list2):
-    return max(0.0, (min(len(list1), len(list2)) - distance.levenshtein(list1, list2)) / (
-        min(len(list1), len(list2))))
+    return max(0.0, (min(len(list1), len(list2)) - distance.levenshtein(list1, list2)) / (min(len(list1), len(list2))))
 
 
 def cleanUM(x):
@@ -34,8 +33,7 @@ def cleanUM(x):
 def find_all_units(corpus, um):
     if 'unitsVar.csv' not in os.listdir('work_files/'):
         units = []
-        cleara = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', ' ', ',', '±', '–', '×',
-                  '^', '-', ';', '(']
+        cleara = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', ' ', ',', '±', '–', '×', '^', '-', ';', '(']
         clearb = ['.', ' ', ',', '±', '-', '×', ';', ')']
         for i in tqdm(range(0, len(corpus))):
             txt = corpus.Text.values[i]
@@ -43,19 +41,16 @@ def find_all_units(corpus, um):
             for s in sent:
                 tok = nltk.word_tokenize(s)
                 for t in range(0, len(tok)):
-                    if tok[t].replace('^', '') in um and re.findall('[^0-9]',
-                                                                    tok[t].replace('^', '')):
+                    if tok[t].replace('^', '') in um and re.findall('[^0-9]', tok[t].replace('^', '')):
                         indice = t + 1
                         unit = tok[t]
                         while indice < len(tok) and \
-                                (tok[indice].lower() not in words.words() and len(
-                                    tok[indice].lower()) > 1):
-                            unit = unit + ' ' + tok[indice]
-                            indice += 1
+                                (tok[indice].lower() not in words.words() and len(tok[indice].lower()) > 1):
+                                unit = unit + ' ' + tok[indice]
+                                indice += 1
                         indice = t - 1
                         while indice > 0 and \
-                                (tok[indice].lower() not in words.words() and len(
-                                    tok[indice].lower()) > 1):
+                                (tok[indice].lower() not in words.words() and len(tok[indice].lower()) > 1):
                             unit = tok[indice] + ' ' + unit
                             indice -= 1
                         while unit and unit[0] in cleara:
@@ -71,9 +66,8 @@ def find_all_units(corpus, um):
             for j in um:
                 b = re.split(r'[. /\\]', cleanUM(j))
                 if jaccard_indice(a, b) >= 0.4:
-                    if similarity_extended(a, b) >= 0.4 \
-                            and [jaccard_indice(a, b), j, similarity_extended(a, b)] not in \
-                            variants[i]:
+                    if similarity_extended(a, b) >= 0.4\
+                            and [jaccard_indice(a, b), j, similarity_extended(a, b)] not in variants[i]:
                         variants[i].append([similarity_extended(a, b), j, jaccard_indice(a, b)])
         df = pd.DataFrame(None, columns=['UMnew', 'UMrto', 'Scores'])
         for i in variants:

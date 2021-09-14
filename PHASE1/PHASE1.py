@@ -1,27 +1,24 @@
 # coding: utf-8
 from __future__ import unicode_literals
 
-"""
-"""
-import ast
-import json
 import os
 import re
-import warnings
-
-import pandas as pd
+import ast
+import json
 import spacy
 import stanza
-from spacy.symbols import ORTH
+import warnings
+import pandas as pd
 from tqdm import tqdm
+from spacy.symbols import ORTH
 
 import AcrOtr
-import DrivenExtraction
-import SegmentAnalyse
-import corpusCrawler
 import matcher
-import ontoCrawler
 import umFinder
+import ontoCrawler
+import corpusCrawler
+import SegmentAnalyse
+import DrivenExtraction
 
 
 # manually add some vocabulary
@@ -44,8 +41,7 @@ def addManuVoc(df):
 def allVoc(row):
     terms = ast.literal_eval(row.PrefLabel) if type(row.PrefLabel) == str else row.PrefLabel
     if row.AltLabel:
-        terms = terms + ast.literal_eval(row.AltLabel) if type(
-            row.AltLabel) == str else row.AltLabel
+        terms = terms + ast.literal_eval(row.AltLabel) if type(row.AltLabel) == str else row.AltLabel
     return list(set(terms))
 
 
@@ -58,8 +54,7 @@ def fastring(df):
         with open('work_files/PrefLabels_driven_extraction.json') as json_file:
             js = json.load(json_file)
     else:
-        js = DrivenExtraction.main2('PrefLabels', 'corpus',
-                                    [y for x in df.PrefLabel.values.tolist() for y in x],
+        js = DrivenExtraction.main2('PrefLabels', 'corpus', [y for x in df.PrefLabel.values.tolist() for y in x],
                                     2, False, True, False)
     for i in df.itertuples():
         for j in js:
@@ -69,8 +64,7 @@ def fastring(df):
         with open('work_files/AltLabels_driven_extraction.json') as json_file:
             js = json.load(json_file)
     else:
-        js = DrivenExtraction.main2('AltLabels', 'corpus',
-                                    [y for x in df.AltLabel.values.tolist() for y in x],
+        js = DrivenExtraction.main2('AltLabels', 'corpus', [y for x in df.AltLabel.values.tolist() for y in x],
                                     2, False, True, False)
     for i in df.itertuples():
         for j in js:
@@ -80,14 +74,13 @@ def fastring(df):
         with open('work_files/ManuLabels_driven_extraction.json') as json_file:
             js = json.load(json_file)
     else:
-        js = DrivenExtraction.main2('ManuLabels', 'corpus',
-                                    [y for x in df.ManuLabel.values.tolist() for y in x],
+        js = DrivenExtraction.main2('ManuLabels', 'corpus', [y for x in df.ManuLabel.values.tolist() for y in x],
                                     2, False, True, False)
     for i in df.itertuples():
         for j in js:
             if j in i.ManuLabel:
                 df.at[i.Index, 'FastrManu'] = df.at[i.Index, 'FastrManu'] + js[j]
-    return df
+    return df  # .drop_duplicates(['Concept', 'Term'], keep='first')
 
 
 # create the data frame for the csv unit file
@@ -100,14 +93,12 @@ def createUnitFile(base, found, desambig):
         with open('work_files/UnitsLabels_driven_extraction.json') as json_file:
             js = json.load(json_file)
     else:
-        js = DrivenExtraction.main2('UnitsLabels', 'corpus',
-                                    list(set(base.PrefLabel.values.tolist())), 2, False, False,
+        js = DrivenExtraction.main2('UnitsLabels', 'corpus', list(set(base.PrefLabel.values.tolist())), 2, False, False,
                                     False)
     for i in base.itertuples():
         if i.PrefLabel not in pref:
             pref.append(i.PrefLabel)
-            alt.append(list(
-                set([x for x in base[base.PrefLabel == i.PrefLabel].AltLabel.values.tolist()])))
+            alt.append(list(set([x for x in base[base.PrefLabel == i.PrefLabel].AltLabel.values.tolist()])))
             temp = []
             for j in [x for x in base[base.PrefLabel == pref[-1]].AltLabel.values.tolist()]:
                 if found[found.UMrto == j].UMnew.values.tolist():
@@ -143,8 +134,7 @@ def build_um(um, nlp):
                 for t in j.split(' '):
                     nlp.tokenizer.add_special_case(t, [{ORTH: t}])
                 res[j] = [i.Associations, [x.text for x in nlp(j)]]
-    open('work_files/units.json', 'w', encoding='utf-8').write(
-        json.dumps(res, indent=4, ensure_ascii=False))
+    open('work_files/units.json', 'w', encoding='utf-8').write(json.dumps(res, indent=4, ensure_ascii=False))
     return res, nlp
 
 
@@ -152,6 +142,7 @@ def build_terms(voca, nlp):
     res = {}
     for i in voca.itertuples():
         for j in i.PrefLabel:
+            # if i.Argument + i.Node + 'PrefLabel' + j not in res:
             for t in j.split(' '):
                 nlp.tokenizer.add_special_case(t, [{ORTH: t}])
             res[i.Argument + i.Node + 'PrefLabel' + j] = [i.Argument, i.Node, i.Depth, 'PrefLabel',
@@ -159,74 +150,78 @@ def build_terms(voca, nlp):
         for j in i.AltLabel:
             for t in j.split(' '):
                 nlp.tokenizer.add_special_case(t, [{ORTH: t}])
+            # if i.Argument + i.Node + 'AltLabel' not in res:
             res[i.Argument + i.Node + 'AltLabel' + j] = [i.Argument, i.Node, i.Depth, 'AltLabel',
                                                          [x.text for x in nlp(j)]]
         for j in i.FastrPref:
             for t in j.split(' '):
                 nlp.tokenizer.add_special_case(t, [{ORTH: t}])
+            # if i.Argument + i.Node + 'FastrPref' not in res:
             res[i.Argument + i.Node + 'FastrPref' + j] = [i.Argument, i.Node, i.Depth, 'FastrPref',
                                                           [x.text for x in nlp(j)]]
         for j in i.FastrAlt:
             for t in j.split(' '):
                 nlp.tokenizer.add_special_case(t, [{ORTH: t}])
+            # if i.Argument + i.Node + 'FastrAlt' not in res:
             res[i.Argument + i.Node + 'FastrAlt' + j] = [i.Argument, i.Node, i.Depth, 'FastrAlt',
                                                          [x.text for x in nlp(j)]]
         for j in i.AcroPrefLabel:
             for t in j[0].split(' '):
                 nlp.tokenizer.add_special_case(t, [{ORTH: t}])
-            res[i.Argument + i.Node + 'AcroPrefLabel-0' + j[0]] = [i.Argument, i.Node, i.Depth,
-                                                                   'AcroPrefLabel-0',
+            # if i.Argument + i.Node + 'AcroPrefLabel-0' not in res:
+            res[i.Argument + i.Node + 'AcroPrefLabel-0' + j[0]] = [i.Argument, i.Node, i.Depth, 'AcroPrefLabel-0',
                                                                    [x.text for x in nlp(j[0])]]
             for t in j[0].split(' '):
                 nlp.tokenizer.add_special_case(t, [{ORTH: t}])
-            res[i.Argument + i.Node + 'AcroPrefLabel-1' + j[1]] = [i.Argument, i.Node, i.Depth,
-                                                                   'AcroPrefLabel-1',
+            # if i.Argument + i.Node + 'AcroPrefLabel-1' not in res:
+            res[i.Argument + i.Node + 'AcroPrefLabel-1' + j[1]] = [i.Argument, i.Node, i.Depth, 'AcroPrefLabel-1',
                                                                    [x.text for x in nlp(j[1])]]
         for j in i.AcroAltLabel:
+            # if i.Argument + i.Node + 'AcroAltLabel-0' not in res:
             for t in j[0].split(' '):
                 nlp.tokenizer.add_special_case(t, [{ORTH: t}])
-            res[i.Argument + i.Node + 'AcroAltLabel-0' + j[0]] = [i.Argument, i.Node, i.Depth,
-                                                                  'AcroAltLabel-0',
+            res[i.Argument + i.Node + 'AcroAltLabel-0' + j[0]] = [i.Argument, i.Node, i.Depth, 'AcroAltLabel-0',
                                                                   [x.text for x in nlp(j[0])]]
             for t in j[0].split(' '):
                 nlp.tokenizer.add_special_case(t, [{ORTH: t}])
-            res[i.Argument + i.Node + 'AcroAltLabel-1' + j[1]] = [i.Argument, i.Node, i.Depth,
-                                                                  'AcroAltLabel-1',
+            # if i.Argument + i.Node + 'AcroAltLabel-1' not in res:
+            res[i.Argument + i.Node + 'AcroAltLabel-1' + j[1]] = [i.Argument, i.Node, i.Depth, 'AcroAltLabel-1',
                                                                   [x.text for x in nlp(j[1])]]
         for j in i.AcroFastrPref:
             for t in j[0].split(' '):
                 nlp.tokenizer.add_special_case(t, [{ORTH: t}])
-            res[i.Argument + i.Node + 'AcroFastrPref-0' + j[0]] = [i.Argument, i.Node, i.Depth,
-                                                                   'AcroFastrPref-0',
+            # if i.Argument + i.Node + 'AcroFastrPref-0' not in res:
+            res[i.Argument + i.Node + 'AcroFastrPref-0' + j[0]] = [i.Argument, i.Node, i.Depth, 'AcroFastrPref-0',
                                                                    [x.text for x in nlp(j[0])]]
             for t in j[0].split(' '):
                 nlp.tokenizer.add_special_case(t, [{ORTH: t}])
-            res[i.Argument + i.Node + 'AcroFastrPref-1' + j[1]] = [i.Argument, i.Node, i.Depth,
-                                                                   'AcroFastrPref-1',
+            # if i.Argument + i.Node + 'AcroFastrPref-1' not in res:
+            res[i.Argument + i.Node + 'AcroFastrPref-1' + j[1]] = [i.Argument, i.Node, i.Depth, 'AcroFastrPref-1',
                                                                    [x.text for x in nlp(j[1])]]
         for j in i.AcroFastrAlt:
             for t in j[0].split(' '):
                 nlp.tokenizer.add_special_case(t, [{ORTH: t}])
-            res[i.Argument + i.Node + 'AcroFastrAlt-0' + j[0]] = [i.Argument, i.Node, i.Depth,
-                                                                  'AcroFastrAlt-0',
+            # if i.Argument + i.Node + 'AcroFastrAlt-0' not in res:
+            res[i.Argument + i.Node + 'AcroFastrAlt-0' + j[0]] = [i.Argument, i.Node, i.Depth, 'AcroFastrAlt-0',
                                                                   [x.text for x in nlp(j[0])]]
             for t in j[0].split(' '):
                 nlp.tokenizer.add_special_case(t, [{ORTH: t}])
-            res[i.Argument + i.Node + 'AcroFastrAlt-1' + j[1]] = [i.Argument, i.Node, i.Depth,
-                                                                  'AcroFastrAlt-1',
+            # if i.Argument + i.Node + 'AcroFastrAlt-1' not in res:
+            res[i.Argument + i.Node + 'AcroFastrAlt-1' + j[1]] = [i.Argument, i.Node, i.Depth, 'AcroFastrAlt-1',
                                                                   [x.text for x in nlp(j[1])]]
         for j in i.ManuLabel:
             for t in j.split(' '):
                 nlp.tokenizer.add_special_case(t, [{ORTH: t}])
+            # if i.Argument + i.Node + 'ManuLabel' not in res:
             res[i.Argument + i.Node + 'ManuLabel' + j] = [i.Argument, i.Node, i.Depth, 'ManuLabel',
                                                           [x.text for x in nlp(j)]]
-    open('work_files/terms.json', 'w', encoding='utf-8').write(
-        json.dumps(res, indent=4, ensure_ascii=False))
+    open('work_files/terms.json', 'w', encoding='utf-8').write(json.dumps(res, indent=4, ensure_ascii=False))
     return res, nlp
 
 
 # extract the windows from the documents with their respective entities of interest
 def extractWindow(corp, um, voca, debut, fin, noLimit):
+
     print('#BUILD TOKENIZER ... ', end='')
     tokenicer = spacy.load("en_core_web_sm")
     refsUM, tokenicer = build_um(um, tokenicer)
@@ -262,15 +257,14 @@ def extractWindow(corp, um, voca, debut, fin, noLimit):
                         units.append([q, u])
                         values.append([q, findValues(sent[q], u + t)])
 
-            if (units and 1 in [x[0] for x in units] and (
-                    [y for x in values for y in x[1]] or terms)) or noLimit:
-                win = win.append({'UM': units,
-                                  'NumVal': values,
-                                  'Terms': terms,
-                                  'Segment': info[i],
-                                  'Text': sent,
-                                  'Doc': file[i]},
-                                 ignore_index=True)
+            if (units and 1 in [x[0] for x in units] and ([y for x in values for y in x[1]] or terms)) or noLimit:
+                    win = win.append({'UM': units,
+                                      'NumVal': values,
+                                      'Terms': terms,
+                                      'Segment': info[i],
+                                      'Text': sent,
+                                      'Doc': file[i]},
+                                     ignore_index=True)
     return win, tokenicer, sentencer
 
 
@@ -299,10 +293,8 @@ def findValues(sent, units):
     temp = []
     for i in range(0, len(sent)):  # vérifie que on est pas dans les um
         if i not in units and (
-                (len(re.findall('[\d±*×()]', sent[i])) >= (
-                        len(sent[i]) / 1.8) or  # token avec une majorité de chiffres
-                 re.findall('[^\w!"#$%&\',/:;?@\[\]_`{|}.]',
-                            sent[i]))):  # OU sans symboles non math
+                (len(re.findall('[\d±*×()]', sent[i])) >= (len(sent[i]) / 1.8) or  # token avec une majorité de chiffres
+                 re.findall('[^\w!"#$%&\',/:;?@\[\]_`{|}.]', sent[i]))):  # OU sans symboles non math
             temp.append([sent[i], i, i + 1])
     if temp:
         val = [[temp[0][0]], temp[0][1], temp[0][2]]
@@ -336,21 +328,22 @@ def findValues(sent, units):
     for i in values:
         splited = False
         while i[0][0] in ['(', ')']:
-            i = [i[0][1:], i[1] + 1, i[2]]
+            i = [i[0][1:], i[1]+1, i[2]]
         while i[0][-1] in ['(', ')']:
-            i = [i[0][:-1], i[1], i[2] - 1]
+            i = [i[0][:-1], i[1], i[2]-1]
         if re.findall('\d-\d', ''.join(i[0])):
             splited = True
             temp = [[], 0, 0]
             for j in range(0, len(i[0])):
                 if i[0][j] != '-':
-                    temp = [temp[0] + [i[0][j]], i[1], max([i[1], temp[2]]) + 1]
+                    temp = [temp[0]+[i[0][j]], i[1], max([i[1], temp[2]])+1]
                 else:
                     res.append(temp)
                     temp = [[], 0, 0]
             res.append(temp)
         if not splited:
             res.append(i)
+
     return res
 
 
@@ -361,6 +354,7 @@ def findTerms(sent, refs):
     for i in refs:
         w = refs[i][-1]
         for m in matcher.match_sequence(simple_tokens(w), simple_tokens(sent)):
+            # print(m)
             temp.append([list(m[0]), m[1], m[2], refs[i][0], refs[i][1], refs[i][2], refs[i][3]])
     for t in temp:
         valid = True
@@ -374,6 +368,7 @@ def findTerms(sent, refs):
 
 def simple_tokens(token_list):
     token_list = [x.lower() for x in token_list]
+    # token_list = []
     return token_list
 
 
@@ -381,8 +376,7 @@ def addArgument(df, arg, track, span, disamb, sentence, window, segment, doc):
     df = df.append({'Argument': arg,
                     'Track': track,
                     'Span': span,
-                    'Disambiguation': disamb if len(''.join(disamb[0])) > 1 else [
-                        track[0].split('_'), None, None],
+                    'Disambiguation': disamb if len(''.join(disamb[0])) > 1 else [track[0].split('_'), None, None],
                     'Sentence': sentence,
                     'Window': window,
                     'Segment': segment,
@@ -408,8 +402,7 @@ def alertOverlap(values, copy, overlap):
 
 
 def transform_sentence(sentence, terms, numval, units, overlap):
-    replace = [x + ['cm'] for x in units] + [x + ['10'] for x in numval] + [x + ['concept'] for x in
-                                                                            terms]
+    replace = [x + ['cm'] for x in units] + [x + ['10'] for x in numval] + [x + ['concept'] for x in terms]
     replace.sort(key=takeSecond)
     over = alertOverlap(replace, sentence, overlap)
 
@@ -451,13 +444,11 @@ def transform_sentence(sentence, terms, numval, units, overlap):
     return res
 
 
-def desambigUM(df, n, origin_unit, sentence, window, seg, doc, data, head_of_num, ter, trad,
-               tolerance, quantityArg,
+def desambigUM(df, n, origin_unit, sentence, window, seg, doc, data, head_of_num, ter, trad, tolerance, quantityArg,
                added, addimentionnalArg):
     if len(origin_unit[-1]) == 1 and origin_unit[-1][0] not in [x[0] for x in addimentionnalArg]:
         df = addArgument(df, origin_unit[-1][0], [origin_unit[-1][0], 0, 'PrefLabel'],
-                         [n, origin_unit[:-1]], [origin_unit[-1][0].split('_'), None, None],
-                         sentence, window,
+                         [n, origin_unit[:-1]], [origin_unit[-1][0].split('_'), None, None], sentence, window,
                          seg,
                          doc)
         added = True
@@ -483,12 +474,12 @@ def desambigUM(df, n, origin_unit, sentence, window, seg, doc, data, head_of_num
                         df = addArgument(df, origin_term[3], origin_term[4:], [n, origin_unit[:-1]],
                                          origin_term[0:3], sentence, window, seg, doc)
                         added = True
+                        # break
     else:
         candidat = data[head_of_num.head - 1]
         if candidat.text == 'concept':
             origin_term = [y for y in ter if
-                           y[1:3] == [x for x in trad['concept'] if x[-1] == int(candidat.id) - 1][
-                                         0][
+                           y[1:3] == [x for x in trad['concept'] if x[-1] == int(candidat.id) - 1][0][
                                      0:2]][0]
             if origin_term[3] in quantityArg:
                 df = addArgument(df, origin_term[3], origin_term[4:], [n, origin_unit[:-1]],
@@ -507,16 +498,18 @@ def desambigUM(df, n, origin_unit, sentence, window, seg, doc, data, head_of_num
                         df = addArgument(df, origin_term[3], origin_term[4:], [n, origin_unit[:-1]],
                                          origin_term[0:3], sentence, window, seg, doc)
                         added = True
+    # if not added and len(origin_unit[-1]) >= 2:
+    #     for o in origin_unit[-1]:
+    #         df = addArgument(df, o, [o, 0, 'PrefLabel'], [n, origin_unit[:-1]], [o.split('_'), None, None],
+    #                          sentence, window, seg, doc)
     return df, added
 
 
 def buildArgument(win, tolerance):
     nlp = stanza.Pipeline(processors='tokenize,mwt,pos,lemma,depparse', lang='en', package='partut',
                           tokenize_pretokenized=True)
-    df = pd.DataFrame(None,
-                      columns=['Argument', 'Track', 'Span', 'Disambiguation', 'Sentence', 'Window',
-                               'Segment',
-                               'Document'])
+    df = pd.DataFrame(None, columns=['Argument', 'Track', 'Span', 'Disambiguation', 'Sentence', 'Window', 'Segment',
+                                     'Document'])
 
     w_numval = win.NumVal.values
     w_units = win.UM.values
@@ -559,21 +552,17 @@ def buildArgument(win, tolerance):
             sentence = window_r[i]
             if not sentence:
                 continue
-            terms = [x for x in terms_r if x[0] == i][0][1] if [x for x in terms_r if
-                                                                x[0] == i] else []
-            numval = [x for x in numval_r if x[0] == i][0][1] if [x for x in numval_r if
-                                                                  x[0] == i] else []
-            units = [x for x in units_r if x[0] == i][0][1] if [x for x in units_r if
-                                                                x[0] == i] else []
+            terms = [x for x in terms_r if x[0] == i][0][1] if [x for x in terms_r if x[0] == i] else []
+            numval = [x for x in numval_r if x[0] == i][0][1] if [x for x in numval_r if x[0] == i] else []
+            units = [x for x in units_r if x[0] == i][0][1] if [x for x in units_r if x[0] == i] else []
             for term in terms:
                 if term[3] in symbolicArg:
-                    df = addArgument(df, term[3], term[4:], term[0:3], term[0:3], sentence,
-                                     window_r, seg_r, doc_r)
+                    df = addArgument(df, term[3], term[4:], term[0:3], term[0:3], sentence, window_r, seg_r, doc_r)
 
             if not numval_r and not units_r:
                 continue
             copy = list(sentence)
-            versions = transform_sentence(copy, terms, numval, units, overlap)
+            versions = transform_sentence(copy, terms, numval, units, overlap)  # [(version_1, traduction_1), ...]
             for v in versions:
                 copy, trad, num, uni, ter = v[0], v[1], v[2], v[3], v[4]
                 data = nlp(' '.join(copy)).sentences[0].words
@@ -584,69 +573,57 @@ def buildArgument(win, tolerance):
 
                     if head_of_num.text == 'cm':  # numval is dependent to unit
                         origin_unit = [y for y in uni if
-                                       y[1:3] ==
-                                       [x for x in trad['cm'] if x[-1] == int(head_of_num.id) - 1][
-                                           0][0:2]][0]
-                        df, added = desambigUM(df, n, origin_unit, sentence, window_r, seg_r, doc_r,
-                                               data, head_of_num,
-                                               ter, trad, tolerance, quantityArg, added,
-                                               addimentionnalArg)
+                                       y[1:3] == [x for x in trad['cm'] if x[-1] == int(head_of_num.id) - 1][0][0:2]][0]
+                        df, added = desambigUM(df, n, origin_unit, sentence, window_r, seg_r, doc_r, data, head_of_num,
+                                               ter, trad, tolerance, quantityArg, added, addimentionnalArg)
 
                     elif head_of_num.text == 'concept':  # numval is dependent to concept
+                        # print(head_of_num)
                         for o in [x for x in trad['concept'] if x[-1] == int(head_of_num.id) - 1]:
                             origin_term = [y for y in ter if y[1:3] == o[0:2]][0]
                             argument = [x for x in addimentionnalArg if x[1] == origin_term[3]]
                             if argument:
-                                df = addArgument(df, argument[0][0],
-                                                 [argument[0][0], 0, 'PrefLabel'],
+                                df = addArgument(df, argument[0][0], [argument[0][0], 0, 'PrefLabel'],
                                                  [n, origin_term[0:3]],
                                                  origin_term[0:3], sentence, window_r, seg_r, doc_r)
                                 added = True
 
                     if not added:  # try with unit close to numval
                         closest_candidates = [(y[1], y[0]) for y in
-                                              [((abs(z[0] + 1), z[1]) if z[0] < 0 else (z[0], z[1]))
-                                               for z in
-                                               [(
-                                                   int(x.id) - int(
-                                                       data[int(converted_num.id) - 1].id),
-                                                   int(x.id)) for x
-                                                   in
-                                                   data if
-                                                   x.text == 'cm']] if y[0] < tolerance / 2]
+                                              [((abs(z[0] + 1), z[1]) if z[0] < 0 else (z[0], z[1])) for z in
+                                               [(int(x.id) - int(data[int(converted_num.id) - 1].id), int(x.id)) for x
+                                                in
+                                                data if
+                                                x.text == 'cm']] if y[0] < tolerance / 2]
                         closest_candidates.sort(key=takeSecond)
                         for candi in closest_candidates:
-                            for o in [x for x in trad['cm'] if
-                                      x[-1] == int(data[candi[0] - 1].id) - 1]:
+                            # if added:
+                            #     break
+                            for o in [x for x in trad['cm'] if x[-1] == int(data[candi[0] - 1].id) - 1]:
                                 origin_unit = [y for y in uni if y[1:3] == o[0:2]][0]
-                                df, added = desambigUM(df, n, origin_unit, sentence, window_r,
-                                                       seg_r, doc_r, data,
-                                                       head_of_num, ter, trad, tolerance,
-                                                       quantityArg, added,
+                                df, added = desambigUM(df, n, origin_unit, sentence, window_r, seg_r, doc_r, data,
+                                                       head_of_num, ter, trad, tolerance, quantityArg, added,
                                                        addimentionnalArg)
 
                     if not added:  # try with close concepts
                         closest_candidates = [(y[1], y[0]) for y in
-                                              [((abs(z[0] + 1), z[1]) if z[0] < 0 else (z[0], z[1]))
-                                               for z in
-                                               [(
-                                                   int(x.id) - int(
-                                                       data[int(converted_num.id) - 1].id),
-                                                   int(x.id)) for x
-                                                   in
-                                                   data if x.text == 'concept']] if
-                                              y[0] < tolerance]
+                                              [((abs(z[0] + 1), z[1]) if z[0] < 0 else (z[0], z[1])) for z in
+                                               [(int(x.id) - int(data[int(converted_num.id) - 1].id), int(x.id)) for x
+                                                in
+                                                data if x.text == 'concept']] if y[0] < tolerance]
                         closest_candidates.sort(key=takeSecond)
                         for candidat in closest_candidates:
                             for o in [x for x in trad['concept'] if x[-1] == candidat[0] - 1]:
                                 origin_term = [y for y in ter if y[1:3] == o[0:2]][0]
                                 argument = [x for x in addimentionnalArg if x[1] == origin_term[3]]
                                 if argument:
-                                    df = addArgument(df, argument[0][0],
-                                                     [argument[0][0], 0, 'PrefLabel'], [n],
-                                                     origin_term[0:3], sentence, window_r, seg_r,
-                                                     doc_r)
+                                    df = addArgument(df, argument[0][0], [argument[0][0], 0, 'PrefLabel'], [n],
+                                                     origin_term[0:3], sentence, window_r, seg_r, doc_r)
                                     added = True
+                                    # break
+                            # if added:
+                            #     break
+
     overlap.close()
     for col in df.columns:
         if 'Unnamed' in col:
@@ -674,6 +651,7 @@ def cleanDF(df):
         elif i.Type == 'SYMBOLIC':
             symbolicArg.append(i.Argument)
     quantityArg = list(set(quantityArg))
+    # addimentionnalArg = list(set(addimentionnalArg))  # besoin d'ajouter le symbolic-arg associé
     addimentionnalArg = [('component_qty_value', 'impact_factor_component')]
     symbolicArg = list(set(symbolicArg))
     df['Type'] = ['QUANTITY' if x in quantityArg else
@@ -707,15 +685,12 @@ def cleanDF(df):
                             'IDF_classic_term': 'IDF_classic_term'
                             })
 
-    df = df.drop_duplicates(
-        ['Argument', 'Node', 'Original_value', 'Attached_value', 'Sentence', 'Document'],
-        keep='first')
+    df = df.drop_duplicates(['Argument', 'Node', 'Original_value', 'Attached_value', 'Sentence', 'Document'],
+                            keep='first')
 
     columns_to_normalize = ['DC_Tree',
-                            'TF_segment_term_top', 'ICF_segment_term_top', 'TF_segment_arg_top',
-                            'ICF_segment_arg_top',
-                            'TF_segment_term_bot', 'ICF_segment_term_bot', 'TF_segment_arg_bot',
-                            'ICF_segment_arg_bot',
+                            'TF_segment_term_top', 'ICF_segment_term_top', 'TF_segment_arg_top', 'ICF_segment_arg_top',
+                            'TF_segment_term_bot', 'ICF_segment_term_bot', 'TF_segment_arg_bot', 'ICF_segment_arg_bot',
                             'TF_classic_term', 'IDF_classic_term']
     for c in columns_to_normalize:
         df[c] = (df[c] - df[c].min()) / (df[c].max() - df[c].min())
@@ -728,6 +703,8 @@ def main():
 
     if 'corp.csv' not in os.listdir('work_files/'):
         corp = corpusCrawler.parse_all('corpus')
+        # corp = corp[corp.Tag != 'info']
+        # corp = corp[~corp['Attribute'].isin(['keywords', 'outline', 'acknowledgements', 'references'])]           # optional
         corp.to_csv('work_files/corp.csv', encoding='utf-8')  # Document|Tag|Attribut|Texte
     corp = pd.read_csv(r'work_files/corp.csv')
 
@@ -769,19 +746,24 @@ def main():
         for col in arg.columns:
             if 'Unnamed' in col:
                 del arg[col]
-        arg.drop_duplicates(
-            ['Argument', 'Track', 'Span', 'Disambiguation', 'Sentence', 'Segment', 'Document'],
-            keep='first').to_csv('work_files/argCLEAN.csv', encoding='utf-8')
+        arg.drop_duplicates(['Argument', 'Track', 'Span', 'Disambiguation', 'Sentence', 'Segment', 'Document'],
+                            keep='first').to_csv('work_files/argCLEAN.csv', encoding='utf-8')
     else:
         print('EXIST')
     arg = pd.read_csv('work_files/argCLEAN.csv')
 
     print('# add Tf-Icf to ' + str(len(arg)) + ' results')
+    # if 'segment_context_Scores.csv' not in os.listdir('work_files/'):
+    #     print('context scores', end='')
+    #     SegmentAnalyse.get_contextScores(arg)
+    # if 'classic_Scores.csv' not in os.listdir('work_files/'):
+    #     print('classic scores', end='')
+    #     SegmentAnalyse.get_classic_scores(arg)
+
     SegmentAnalyse.prepare_Scores(arg, corp)
     res = SegmentAnalyse.add_Scores(arg)
 
-    print(
-        '\n ########################################## \n FINALISATION \n ##########################################')
+    print('\n ########################################## \n FINALISATION \n ##########################################')
     res.to_csv('resPHASE1/res.csv', encoding='utf-8')
     res = cleanDF(res)
     res.to_csv('resPHASE1/resFINAL.csv', encoding='utf-8')
@@ -789,3 +771,8 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
+"""
+REVOIR LA RECONNAISSANCE DES ARG ADDIMENTIONNELS     
+"""

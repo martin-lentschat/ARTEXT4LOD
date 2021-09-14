@@ -68,8 +68,7 @@ def createBagD(corp, docs, tokenicer, sentencer):
         words = []
         for s in [x.text for x in sentencer(text_content).sentences]:
             words = words + [w.text for w in tokenicer(s)
-                             if
-                             len(w.text) > 1 and w.text.lower() not in stopwords.words('english')]
+                             if len(w.text) > 1 and w.text.lower() not in stopwords.words('english')]
         bag[d] = (len(words), text_content.lower())
     return bag
 
@@ -85,8 +84,7 @@ def createBag(corp, classes, tokenicer, sentencer):
         words = []
         for s in [x.text for x in sentencer(text_content).sentences]:
             words = words + [w.text for w in tokenicer(s)
-                             if
-                             len(w.text) > 1 and w.text.lower() not in stopwords.words('english')]
+                             if len(w.text) > 1 and w.text.lower() not in stopwords.words('english')]
         bag[c] = (len(words), text_content.lower())
     return bag
 
@@ -129,13 +127,12 @@ def get_tf(terms, bag):
 
 # compute all of the contexts scores of the Segments on a given level
 def contextualise(classes, corp, level):
-    if level + 'segment_bags.json' not in os.listdir('work_files/'):
+    if level+'segment_bags.json' not in os.listdir('work_files/'):
         tokenicer = spacy.load("en_core_web_sm")
         sentencer = stanza.Pipeline(processors='tokenize', lang='en', package='partut')
-        print('Segment scores  -> creat bags ' + level)
+        print('Segment scores  -> creat bags '+level)
         bags = createBag(corp, classes, tokenicer, sentencer)
-        open('work_files/' + level + 'segment_bags.json', 'w', encoding='utf-8').write(
-            json.dumps(bags, indent=4))
+        open('work_files/'+level+'segment_bags.json', 'w', encoding='utf-8').write(json.dumps(bags, indent=4))
 
 
 def classic(corp):
@@ -144,28 +141,23 @@ def classic(corp):
         sentencer = stanza.Pipeline(processors='tokenize', lang='en', package='partut')
         print('Classic Scores -> creat bags')
         bags = createBagD(corp, list(set(corp.Document.values)), tokenicer, sentencer)
-        open('work_files/bags_document.json', 'w', encoding='utf-8').write(
-            json.dumps(bags, indent=4))
+        open('work_files/bags_document.json', 'w', encoding='utf-8').write(json.dumps(bags, indent=4))
 
 
 # all process of creating the Segment classes and then computing the lexical scores
 def prepare_Scores(arg, corp):
-    titles_top = [ast.literal_eval(x)[0] for x in
-                  arg.drop_duplicates(['Segment', 'Document'], keep='first').Segment.values]
-    titles_bottom = [ast.literal_eval(x)[-1] for x in
-                     arg.drop_duplicates(['Segment', 'Document'], keep='first').Segment.values]
+    titles_top = [ast.literal_eval(x)[0] for x in arg.drop_duplicates(['Segment', 'Document'], keep='first').Segment.values]
+    titles_bottom = [ast.literal_eval(x)[-1] for x in arg.drop_duplicates(['Segment', 'Document'], keep='first').Segment.values]
     if 'TOPsegment-Classes.json' not in os.listdir('work_files/'):
         classes = classCreation(titles_top)
-        open('work_files/TOPsegment-Classes.json', 'w', encoding='utf-8').write(
-            json.dumps(classes, indent=4))
+        open('work_files/TOPsegment-Classes.json', 'w', encoding='utf-8').write(json.dumps(classes, indent=4))
     else:
         with open('work_files/TOPsegment-Classes.json') as f:
             classes = json.load(f)
     contextualise(classes, corp, 'TOP')
     if 'BOTsegment-Classes.json' not in os.listdir('work_files/'):
         classes = classCreation(titles_bottom)
-        open('work_files/BOTsegment-Classes.json', 'w', encoding='utf-8').write(
-            json.dumps(classes, indent=4))
+        open('work_files/BOTsegment-Classes.json', 'w', encoding='utf-8').write(json.dumps(classes, indent=4))
     else:
         with open('work_files/BOTsegment-Classes.json') as f:
             classes = json.load(f)
@@ -175,16 +167,12 @@ def prepare_Scores(arg, corp):
 
 # add the context scores to the arguments
 def add_Scores(arg):
-    res = pd.DataFrame(None, ['Argument', 'Track', 'Span', 'Disambiguation', 'Sentence', 'Window',
-                              'Segment',
+    res = pd.DataFrame(None, ['Argument', 'Track', 'Span', 'Disambiguation', 'Sentence', 'Window', 'Segment',
                               'Document',
                               'DC_Tree',
-                              'TF_segment_term_top', 'ICF_segment_term_top', 'TF_segment_arg_top',
-                              'ICF_segment_arg_top',
-                              'TF_segment_term_bot', 'ICF_segment_term_bot', 'TF_segment_arg_bot',
-                              'ICF_segment_arg_bot',
-                              'TF_classic_term', 'IDF_classic_term', 'TF_classic_arg',
-                              'IDF_classic_arg'])
+                              'TF_segment_term_top', 'ICF_segment_term_top', 'TF_segment_arg_top', 'ICF_segment_arg_top',
+                              'TF_segment_term_bot', 'ICF_segment_term_bot', 'TF_segment_arg_bot', 'ICF_segment_arg_bot',
+                              'TF_classic_term', 'IDF_classic_term', 'TF_classic_arg', 'IDF_classic_arg'])
 
     vocarg = get_vocabulary(arg)
     with open('work_files/TOPsegment-Classes.json') as f:
@@ -200,19 +188,14 @@ def add_Scores(arg):
 
     tree_depths = {}
     for i in set(arg.Argument.values):
-        tree_depths[i] = list(set(
-            [ast.literal_eval(x)[1] + 1 for x in list(set(arg[arg.Argument == i].Track.values))]))
+        tree_depths[i] = list(set([ast.literal_eval(x)[1] + 1 for x in list(set(arg[arg.Argument == i].Track.values))]))
 
     for a in tqdm(arg.itertuples()):
         words = [w.lower() for w in ast.literal_eval(a.Disambiguation)[0]
                  if len(w) > 1 and w.lower() not in stopwords.words('english')]
 
-        classe_top = \
-            [x for x in classes_top.keys() if ast.literal_eval(a.Segment)[0] in classes_top[x][1]][
-                0]
-        classe_bot = \
-            [x for x in classes_bot.keys() if ast.literal_eval(a.Segment)[-1] in classes_bot[x][1]][
-                0]
+        classe_top = [x for x in classes_top.keys() if ast.literal_eval(a.Segment)[0] in classes_top[x][1]][0]
+        classe_bot = [x for x in classes_bot.keys() if ast.literal_eval(a.Segment)[-1] in classes_bot[x][1]][0]
         argument = a.Argument
         doc = a.Document
 
@@ -225,19 +208,16 @@ def add_Scores(arg):
                           'Segment': a.Segment,
                           'Document': doc,
 
-                          'DC_Tree': (ast.literal_eval(a.Track)[1] + 1) / (
-                                  max(tree_depths[argument]) + 1),
+                          'DC_Tree': (ast.literal_eval(a.Track)[1] + 1) / (max(tree_depths[argument]) + 1),
 
                           'TF_segment_term_top': get_tf(words, bags_segment_top[classe_top]),
                           'ICF_segment_term_top': get_if(words, bags_segment_top),
-                          'TF_segment_arg_top': get_tf(vocarg[argument],
-                                                       bags_segment_top[classe_top]),
+                          'TF_segment_arg_top': get_tf(vocarg[argument], bags_segment_top[classe_top]),
                           'ICF_segment_arg_top': get_if(vocarg[argument], bags_segment_top),
 
                           'TF_segment_term_bot': get_tf(words, bags_segment_bot[classe_bot]),
                           'ICF_segment_term_bot': get_if(words, bags_segment_bot),
-                          'TF_segment_arg_bot': get_tf(vocarg[argument],
-                                                       bags_segment_bot[classe_bot]),
+                          'TF_segment_arg_bot': get_tf(vocarg[argument], bags_segment_bot[classe_bot]),
                           'ICF_segment_arg_bot': get_if(vocarg[argument], bags_segment_bot),
 
                           'TF_classic_term': get_tf(words, bags_document[doc]),

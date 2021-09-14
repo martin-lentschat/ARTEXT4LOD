@@ -6,6 +6,7 @@ Different methods to process the ontologies
 """
 
 import re
+import ast
 import pandas as pd
 from rdflib import *
 
@@ -20,6 +21,16 @@ def clean(txt):
     txt = re.sub('\t', ' ', txt)
     txt = re.sub("′", "'", txt)
     txt = re.sub('\xa0', ' ', txt)
+    # txt[i] = re.sub('', ' ', txt[i])
+    # txt[i] = re.sub('', ' ', txt[i])
+    # txt[i] = re.sub('', ' ', txt[i])
+    # txt[i] = re.sub('', ' ', txt[i])
+    # txt[i] = re.sub('', ' ', txt[i])
+    # txt[i] = re.sub('', ' ', txt[i])
+    # txt[i] = re.sub('', ' ', txt[i])
+    # txt[i] = re.sub('', ' ', txt[i])
+    # txt[i] = re.sub('', ' ', txt[i])
+    # txt[i] = re.sub('', ' ', txt[i])
     txt = re.sub(' +', ' ', txt)
     while txt[0] == ' ':
         txt = txt[1:]
@@ -39,22 +50,16 @@ def getAssociation():
         c2 = c.split('#')[-1]
         num = len(re.findall(' ', re.findall('\n +<skos:Concept rdf:ID="' + c2, onto)[0])) - 1
         area = re.findall(
-            ' {' + str(num) + '}<skos:Concept rdf:ID="' + c2 + '">.+?\n {' + str(
-                num) + '}</skos:Concept>', onto,
+            ' {' + str(num) + '}<skos:Concept rdf:ID="' + c2 + '">.+?\n {' + str(num) + '}</skos:Concept>', onto,
             re.DOTALL)
         if area:
-            area = re.sub('<core:hasOperand.+?</core:hasOperand.+?\n', '', area[0],
-                          flags=re.DOTALL)  # A VERRIFIER
-            units = list(
-                set([re.findall('".+?"', u)[0][1:-1].replace('#', '').replace('_', ' ').lower()
-                     for u in re.findall('<core:.*?Unit.+', area) if re.findall('".+?"', u)]))
-            units += list(
-                set([re.findall('".+?"', u)[0][1:-1].replace('#', '').replace('_', ' ').lower()
-                     for u in re.findall('<skos:Concept rdf:about=.+', area) if
-                     re.findall('".+?"', u)]))
-            units += list(set(
-                UM[UM.PrefLabel.map(lambda x: x.lower() if isinstance(x, str) else x).isin(units)]
-                    .AltLabel.values.tolist()))
+            area = re.sub('<core:hasOperand.+?</core:hasOperand.+?\n', '', area[0], flags=re.DOTALL)  # A VERRIFIER
+            units = list(set([re.findall('".+?"', u)[0][1:-1].replace('#', '').replace('_', ' ').lower()
+                              for u in re.findall('<core:.*?Unit.+', area) if re.findall('".+?"', u)]))
+            units += list(set([re.findall('".+?"', u)[0][1:-1].replace('#', '').replace('_', ' ').lower()
+                               for u in re.findall('<skos:Concept rdf:about=.+', area) if re.findall('".+?"', u)]))
+            units += list(set(UM[UM.PrefLabel.map(lambda x: x.lower() if isinstance(x, str) else x).isin(units)]
+                              .AltLabel.values.tolist()))
         else:
             units = ['string'] if re.findall('<owl:Class rdf:ID="' + c2 + '"/>', onto) else ''
         for u in units:
@@ -94,6 +99,7 @@ def getAllUnits():
                     alt.append('')
 
     df = pd.DataFrame({'Type': typee, 'PrefLabel': pref, 'AltLabel': alt})
+    # print("### DONE")
     return df
 
 
@@ -131,6 +137,36 @@ def labelA(a, g):
                    initBindings={'arg': URIRef(a)})
 
 
+# def onePermeability(voca, relation):
+#
+#     voca2 = pd.DataFrame(['Argument', 'Node', 'Depth', 'PrefLabel', 'AltLabel'])
+#     voca2 = voca2.append({'Argument': ['permeability'], 'Node': ['permeability'], 'Depth': [0],
+#                           'PrefLabel': ['permeability'], 'AltLabel': ['']}, ignore_index=True)
+#     for v in voca.itertuples():
+#         if v.Argument in ['co2_permeability', 'o2_permeability', 'h2o_permeability']:
+#             voca2 = voca2.append({'Argument': 'permeability', 'Node': v.Node, 'Depth': v.Depth + 1,
+#                                   'PrefLabel': v.PrefLabel, 'AltLabel': v.AltLabel},
+#                                  ignore_index=True)
+#         else:
+#             voca2 = voca2.append({'Argument': v.Argument, 'Node': v.Node, 'Depth': v.Depth,
+#                                   'PrefLabel': v.PrefLabel, 'AltLabel': v.AltLabel},
+#                                  ignore_index=True)
+#
+#     data = {'Relation': ['permeability_relation', 'permeability_relation', 'permeability_relation',
+#                          'permeability_relation', 'permeability_relation', 'permeability_relation',
+#                          'permeability_relation', 'permeability_relation', 'impact_factor_component_relation',
+#                          'impact_factor_component_relation', 'impact_factor_component_relation',
+#                          'impact_factor_component_relation'],
+#             'Argument': ['thickness', 'permeability', 'temperature', 'partial_pressure', 'method', 'packaging',
+#                          'partial_pressure_difference', 'relative_humidity', 'component_qty_value',
+#                          'impact_factor_component', 'packaging', 'packnumber'],
+#             'Type': ['QUANTITY', 'QUANTITY', 'QUANTITY', 'QUANTITY', 'SYMBOLIC', 'SYMBOLIC', 'QUANTITY', 'QUANTITY',
+#                      'QUANTITY', 'SYMBOLIC', 'SYMBOLIC', 'QUANTITY']}
+#     relation2 = pd.DataFrame(data)
+#
+#     return voca2, relation2
+
+
 # process the ontology to extract arguments and labels of the given relations
 def importOnto(naries):
     g = Graph()
@@ -147,12 +183,9 @@ def importOnto(naries):
                                       "{?noeud ?primar ?argument} UNION {?noeud ?second ?argument}"
                                       "}",
                                       initBindings={
-                                          'perm': URIRef(
-                                              'http://opendata.inra.fr/resources/hSC9z#' + nary),
-                                          'primar': URIRef(
-                                              'http://www.w3.org/2002/07/owl#allValuesFrom'),
-                                          'second': URIRef(
-                                              'http://www.w3.org/2002/07/owl#someValuesFrom')})
+                                          'perm': URIRef('http://opendata.inra.fr/resources/hSC9z#' + nary),
+                                          'primar': URIRef('http://www.w3.org/2002/07/owl#allValuesFrom'),
+                                          'second': URIRef('http://www.w3.org/2002/07/owl#someValuesFrom')})
 
         if len(relations_arguments) == 0:
             relations_arguments = g.query("SELECT DISTINCT ?perm ?argument WHERE {"
@@ -160,12 +193,9 @@ def importOnto(naries):
                                           "{?noeud ?primar ?argument} UNION {?noeud ?second ?argument}"
                                           "}",
                                           initBindings={
-                                              'perm': URIRef(
-                                                  'http://opendata.inra.fr/resources/hSC9z#' + nary),
-                                              'primar': URIRef(
-                                                  'http://www.w3.org/2002/07/owl#allValuesFrom'),
-                                              'second': URIRef(
-                                                  'http://www.w3.org/2002/07/owl#someValuesFrom')})
+                                              'perm': URIRef('http://opendata.inra.fr/resources/hSC9z#' + nary),
+                                              'primar': URIRef('http://www.w3.org/2002/07/owl#allValuesFrom'),
+                                              'second': URIRef('http://www.w3.org/2002/07/owl#someValuesFrom')})
         relations = []
         rel_list = []
         arguments = []
@@ -174,16 +204,12 @@ def importOnto(naries):
         for ra in relations_arguments:
             relations.append(ra[0].split('#')[-1])
             arguments.append(ra[1].split('#')[-1])
-            spaces = len(
-                re.findall('\n +?<skos:Concept rdf:ID="' + ra[1].split('#')[-1] + '">', onto)[
-                    0].split('<')[0][
-                1:]) if re.findall('\n +?<skos:Concept rdf:ID="' + ra[1].split('#')[-1] + '">',
-                                   onto) else 0
+            spaces = len(re.findall('\n +?<skos:Concept rdf:ID="' + ra[1].split('#')[-1] + '">', onto)[0].split('<')[0][
+                         1:]) if re.findall('\n +?<skos:Concept rdf:ID="' + ra[1].split('#')[-1] + '">', onto) else 0
             area = re.findall(' ' * spaces + '<skos:Concept rdf:ID="' + ra[1].split('#')[
                 -1] + '">.+?' + '\n' + ' ' * spaces + '</skos:Concept>\n', onto, re.DOTALL)
             if area:
-                if 'hasNumericalValue' in ' '.join(
-                        re.findall('<owl:onProperty rdf:resource=".+?/>\n', area[0])):
+                if 'hasNumericalValue' in ' '.join(re.findall('<owl:onProperty rdf:resource=".+?/>\n', area[0])):
                     typee.append('QUANTITY')
                 else:
                     typee.append('SYMBOLIC')
@@ -193,8 +219,7 @@ def importOnto(naries):
                 rel_list.append(ra[0])
             if ra[1] not in arg_list:
                 arg_list.append(ra[1])
-            df2 = df2.append({'Relation': ra[0].split('#')[-1], 'Argument': ra[1].split('#')[-1],
-                              'Type': typee[-1]},
+            df2 = df2.append({'Relation': ra[0].split('#')[-1], 'Argument': ra[1].split('#')[-1], 'Type': typee[-1]},
                              ignore_index=True)
 
         for a in arg_list:
@@ -212,6 +237,8 @@ def importOnto(naries):
                             'PrefLabel': pref,
                             'AltLabel': alt}, ignore_index=True)
             df = depth(g, df, a, a, d)
+
+    # df, df2 = onePermeability(df, df2)
 
     df.to_csv('work_files/vocOnto.csv', encoding='utf-8')
     df2.to_csv('work_files/naryrelations.csv', encoding='utf-8')
