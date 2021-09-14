@@ -1,5 +1,9 @@
 # coding: utf-8
 
+"""
+transform annotated html tables into relation instances in csv format
+"""
+
 import os
 import re
 # import ast
@@ -13,12 +17,24 @@ from bs4 import BeautifulSoup
 
 
 def clean(txt):
+    # print(txt)
+    # print('aaaaaaaaaa')
     txt = re.sub('[\n\t ]+', ' ', txt)
+    txt = re.sub('\xa0', ' ', txt)
+    txt = re.sub('<sup>', ' ', txt)
+    txt = re.sub('</sup>+', ' ', txt)
+    # print(txt)
+    # print('bbbbbbbbbbbbbbbb')
     while txt[0] == ' ':
         txt = txt[1:]
     while txt[-1] == ' ':
         txt = txt[:-1]
     return txt
+
+
+def standard(txt):
+    split_txt = re.split('[ _]', txt)
+    return '_'.join([x[0].upper()+x[1:].lower() for x in split_txt])
 
 
 def findValue(col_num, cels, head):
@@ -41,10 +57,12 @@ def findAttachment(col_num, cels, head):
     if col_num == '':
         return ''
     else:
+        # print(col_num)
         cel = cels[col_num]
         col = head[col_num]
         # if cel['type'] != col['type']:
         #     print('ERROR\n', col_num, '\n', cels, '\n', head)
+        # print(col.find_all(text=True, recursive=True))
         res = clean(' '.join(col.find_all(text=True, recursive=True)))
         return res
 
@@ -70,8 +88,8 @@ def completeArgs(relation, args):
     df = pd.read_csv(r'input_files\naryrelations.csv', encoding='utf-8')
     candi = df[df.Relation == re.sub(' ', '_', relation.lower())].Argument.tolist()
     for c in candi:
-        if c not in args and c != re.sub('_relation', '', re.sub(' ', '_', relation.lower())):
-            args[c] = ['', '']
+        if c not in [a.lower() for a in args] and c != re.sub('_relation', '', re.sub(' ', '_', relation.lower())):
+            args[standard(c)] = ['', '']
     return args
 
 
@@ -109,38 +127,35 @@ def parse_tables():
                                 col_num = ''
                                 for n in range(0, len(cels)):
                                     if cels[n].text != 'empty':
-                                        # print('##########')
-                                        # print(cels[n])
-                                        # print(arg_res)
-                                        # print('##########')
                                         if cels[n]['type'] == arg_res['type'] and cels[n]['id'] == arg_res['id']:
                                             col_num = n
-                                arg_resultat = {arg_res['type']: [findValue(col_num, cels, head), findAttachment(col_num, cels, head)]}
+                                arg_resultat = {standard(arg_res['type']): [findValue(col_num, cels, head), findAttachment(col_num, cels, head)]}
                             else:
-                                arg_resultat = {re.sub('_[Rr]elation', '', relation['type']): ['', '']}
+                                arg_resultat = {standard(re.sub('_[Rr]elation', '', relation['type'])): ['', '']}
                             arg_res = re.sub('_[Rr]elation', '', relation['type'])
 
                             arg_instance = {}
                             for a in ari:
                                 if a['type'] != arg_res:
+                                    # print(a)
+                                    # print(cels)
                                     col_num = ''
                                     for n in range(0, len(cels)):
                                         if cels[n].text != 'empty':
                                             if cels[n]['type'] == a['type'] and cels[n]['id'] == a['id']:
                                                 col_num = n
-                                    arg_instance[head[col_num]['type']] = [findValue(col_num, cels, head), findAttachment(col_num, cels, head)]
+                                    arg_instance[standard(head[col_num]['type'])] = [findValue(col_num, cels, head), findAttachment(col_num, cels, head)]
 
-                            relation_type.append(relation['type'])
+                            relation_type.append(standard(relation['type']))
                             result_arg.append(arg_resultat)
                             args.append(completeArgs(relation['type'], arg_instance))
                             table_name.append(re.findall('Table \d+', str(soup))[0])
                             caption.append(cap)
-                            segment.append(findSegment(re.findall('Table \d+', str(soup))[0], file))
+                            segment.append(findSegment(re.findall('Table \d+', str(soup))[0], file)+['table'])
                             document.append(file)
 
                         else:
                             continue
-
     return pd.DataFrame(data={'Relation': relation_type,
                               'Result_Argument': result_arg,
                               'Arguments': args,
@@ -153,8 +168,3 @@ def parse_tables():
 
 if __name__ == '__main__':
     print('Tables Parser')
-
-
-"""
-AJOUTER : traitement des balises aii
-"""

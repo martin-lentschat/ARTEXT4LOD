@@ -1,0 +1,169 @@
+id;Section;Argument;Score
+0;"[""abstract""]";co2_permeability;8
+12;"[""Introduction""]";co2_permeability;6
+24;"[""Materials and methods"",""Material and methods"",""Materials""]";co2_permeability;0
+36;"[""Results and discussion"",""Results and discussions"",""Result and discussion"",""Results"",""Discussion""]";co2_permeability;9
+48;"[""Experimental material and method"",""Experimental"", ""Experimental and characterization method"", ""Experimental section"", ""Experimental details"", ""Experimental part""]";co2_permeability;0
+60;"[""Conclusions"",""Conclusion""]";co2_permeability;7
+72;"[""highlight""]";co2_permeability;0
+84;"[""Main limitations""]";co2_permeability;0
+96;"[""Improving the properties of bioplastics""]";co2_permeability;0
+108;"[""Current applications""]";co2_permeability;0
+120;"[""Main characteristics of different bioplastics""]";co2_permeability;0
+132;"[""Possible application""]";co2_permeability;0
+144;"[""Background""]";co2_permeability;0
+156;"[""Preparation of modified clays""]";co2_permeability;0
+10;"[""abstract""]";component_qty_value;6
+22;"[""Introduction""]";component_qty_value;4
+34;"[""Materials and methods"",""Material and methods"",""Materials""]";component_qty_value;9
+46;"[""Results and discussion"",""Results and discussions"",""Result and discussion"",""Results"",""Discussion""]";component_qty_value;7
+58;"[""Experimental material and method"",""Experimental"", ""Experimental and characterization method"", ""Experimental section"", ""Experimental details"", ""Experimental part""]";component_qty_value;8
+70;"[""Conclusions"",""Conclusion""]";component_qty_value;5
+82;"[""highlight""]";component_qty_value;0
+94;"[""Main limitations""]";component_qty_value;0
+106;"[""Improving the properties of bioplastics""]";component_qty_value;0
+118;"[""Current applications""]";component_qty_value;0
+130;"[""Main characteristics of different bioplastics""]";component_qty_value;0
+142;"[""Possible application""]";component_qty_value;0
+154;"[""Background""]";component_qty_value;0
+166;"[""Preparation of modified clays""]";component_qty_value;0
+1;"[""abstract""]";h2o_permeability;8
+13;"[""Introduction""]";h2o_permeability;6
+25;"[""Materials and methods"",""Material and methods"",""Materials""]";h2o_permeability;0
+37;"[""Results and discussion"",""Results and discussions"",""Result and discussion"",""Results"",""Discussion""]";h2o_permeability;9
+49;"[""Experimental material and method"",""Experimental"", ""Experimental and characterization method"", ""Experimental section"", ""Experimental details"", ""Experimental part""]";h2o_permeability;0
+61;"[""Conclusions"",""Conclusion""]";h2o_permeability;7
+73;"[""highlight""]";h2o_permeability;0
+85;"[""Main limitations""]";h2o_permeability;0
+97;"[""Improving the properties of bioplastics""]";h2o_permeability;0
+109;"[""Current applications""]";h2o_permeability;0
+121;"[""Main characteristics of different bioplastics""]";h2o_permeability;0
+133;"[""Possible application""]";h2o_permeability;0
+145;"[""Background""]";h2o_permeability;0
+157;"[""Preparation of modified clays""]";h2o_permeability;0
+11;"[""abstract""]";impact_factor_component;3
+23;"[""Introduction""]";impact_factor_component;5
+35;"[""Materials and methods"",""Material and methods"",""Materials""]";impact_factor_component;9
+47;"[""Results and discussion"",""Results and discussions"",""Result and discussion"",""Results"",""Discussion""]";impact_factor_component;7
+59;"[""Experimental material and method"",""Experimental"", ""Experimental and characterization method"", ""Experimental section"", ""Experimental details"", ""Experimental part""]";impact_factor_component;8
+71;"[""Conclusions"",""Conclusion""]";impact_factor_component;6
+83;"[""highlight""]";impact_factor_component;0
+95;"[""Main limitations""]";impact_factor_component;0
+107;"[""Improving the properties of bioplastics""]";impact_factor_component;0
+119;"[""Current applications""]";impact_factor_component;0
+131;"[""Main characteristics of different bioplastics""]";impact_factor_component;0
+143;"[""Possible application""]";impact_factor_component;0
+155;"[""Background""]";impact_factor_component;0
+167;"[""Preparation of modified clays""]";impact_factor_component;0
+7;"[""abstract""]";method;6
+19;"[""Introduction""]";method;7
+31;"[""Materials and methods"",""Material and methods"",""Materials""]";method;9
+43;"[""Results and discussion"",""Results and discussions"",""Result and discussion"",""Results"",""Discussion""]";method;5
+55;"[""Experimental material and method"",""Experimental"", ""Experimental and characterization method"", ""Experimental section"", ""Experimental details"", ""Experimental part""]";method;8
+67;"[""Conclusions"",""Conclusion""]";method;4
+79;"[""highlight""]";method;0
+91;"[""Main limitations""]";method;0
+103;"[""Improving the properties of bioplastics""]";method;0
+115;"[""Current applications""]";method;0
+127;"[""Main characteristics of different bioplastics""]";method;0
+139;"[""Possible application""]";method;0
+151;"[""Background""]";method;0
+163;"[""Preparation of modified clays""]";method;0
+2;"[""abstract""]";o2_permeability;8
+14;"[""Introduction""]";o2_permeability;6
+26;"[""Materials and methods"",""Material and methods"",""Materials""]";o2_permeability;0
+38;"[""Results and discussion"",""Results and discussions"",""Result and discussion"",""Results"",""Discussion""]";o2_permeability;9
+50;"[""Experimental material and method"",""Experimental"", ""Experimental and characterization method"", ""Experimental section"", ""Experimental details"", ""Experimental part""]";o2_permeability;0
+62;"[""Conclusions"",""Conclusion""]";o2_permeability;7
+74;"[""highlight""]";o2_permeability;0
+86;"[""Main limitations""]";o2_permeability;0
+98;"[""Improving the properties of bioplastics""]";o2_permeability;0
+110;"[""Current applications""]";o2_permeability;0
+122;"[""Main characteristics of different bioplastics""]";o2_permeability;0
+134;"[""Possible application""]";o2_permeability;0
+146;"[""Background""]";o2_permeability;0
+158;"[""Preparation of modified clays""]";o2_permeability;0
+3;"[""abstract""]";packaging;6
+15;"[""Introduction""]";packaging;7
+27;"[""Materials and methods"",""Material and methods"",""Materials""]";packaging;9
+39;"[""Results and discussion"",""Results and discussions"",""Result and discussion"",""Results"",""Discussion""]";packaging;4
+51;"[""Experimental material and method"",""Experimental"", ""Experimental and characterization method"", ""Experimental section"", ""Experimental details"", ""Experimental part""]";packaging;8
+63;"[""Conclusions"",""Conclusion""]";packaging;5
+75;"[""highlight""]";packaging;0
+87;"[""Main limitations""]";packaging;0
+99;"[""Improving the properties of bioplastics""]";packaging;0
+111;"[""Current applications""]";packaging;0
+123;"[""Main characteristics of different bioplastics""]";packaging;0
+135;"[""Possible application""]";packaging;0
+147;"[""Background""]";packaging;0
+159;"[""Preparation of modified clays""]";packaging;0
+8;"[""abstract""]";partial_pressure;0
+20;"[""Introduction""]";partial_pressure;0
+32;"[""Materials and methods"",""Material and methods"",""Materials""]";partial_pressure;9
+44;"[""Results and discussion"",""Results and discussions"",""Result and discussion"",""Results"",""Discussion""]";partial_pressure;0
+56;"[""Experimental material and method"",""Experimental"", ""Experimental and characterization method"", ""Experimental section"", ""Experimental details"", ""Experimental part""]";partial_pressure;8
+68;"[""Conclusions"",""Conclusion""]";partial_pressure;0
+80;"[""highlight""]";partial_pressure;0
+92;"[""Main limitations""]";partial_pressure;0
+104;"[""Improving the properties of bioplastics""]";partial_pressure;0
+116;"[""Current applications""]";partial_pressure;0
+128;"[""Main characteristics of different bioplastics""]";partial_pressure;0
+140;"[""Possible application""]";partial_pressure;0
+152;"[""Background""]";partial_pressure;0
+164;"[""Preparation of modified clays""]";partial_pressure;0
+9;"[""abstract""]";partial_pressure_difference;0
+21;"[""Introduction""]";partial_pressure_difference;0
+33;"[""Materials and methods"",""Material and methods"",""Materials""]";partial_pressure_difference;9
+45;"[""Results and discussion"",""Results and discussions"",""Result and discussion"",""Results"",""Discussion""]";partial_pressure_difference;0
+57;"[""Experimental material and method"",""Experimental"", ""Experimental and characterization method"", ""Experimental section"", ""Experimental details"", ""Experimental part""]";partial_pressure_difference;8
+69;"[""Conclusions"",""Conclusion""]";partial_pressure_difference;0
+81;"[""highlight""]";partial_pressure_difference;0
+93;"[""Main limitations""]";partial_pressure_difference;0
+105;"[""Improving the properties of bioplastics""]";partial_pressure_difference;0
+117;"[""Current applications""]";partial_pressure_difference;0
+129;"[""Main characteristics of different bioplastics""]";partial_pressure_difference;0
+141;"[""Possible application""]";partial_pressure_difference;0
+153;"[""Background""]";partial_pressure_difference;0
+165;"[""Preparation of modified clays""]";partial_pressure_difference;0
+4;"[""abstract""]";relative_humidity;6
+16;"[""Introduction""]";relative_humidity;7
+28;"[""Materials and methods"",""Material and methods"",""Materials""]";relative_humidity;9
+40;"[""Results and discussion"",""Results and discussions"",""Result and discussion"",""Results"",""Discussion""]";relative_humidity;5
+52;"[""Experimental material and method"",""Experimental"", ""Experimental and characterization method"", ""Experimental section"", ""Experimental details"", ""Experimental part""]";relative_humidity;8
+64;"[""Conclusions"",""Conclusion""]";relative_humidity;4
+76;"[""highlight""]";relative_humidity;0
+88;"[""Main limitations""]";relative_humidity;0
+100;"[""Improving the properties of bioplastics""]";relative_humidity;0
+112;"[""Current applications""]";relative_humidity;0
+124;"[""Main characteristics of different bioplastics""]";relative_humidity;0
+136;"[""Possible application""]";relative_humidity;0
+148;"[""Background""]";relative_humidity;0
+160;"[""Preparation of modified clays""]";relative_humidity;0
+5;"[""abstract""]";temperature;6
+17;"[""Introduction""]";temperature;7
+29;"[""Materials and methods"",""Material and methods"",""Materials""]";temperature;9
+41;"[""Results and discussion"",""Results and discussions"",""Result and discussion"",""Results"",""Discussion""]";temperature;5
+53;"[""Experimental material and method"",""Experimental"", ""Experimental and characterization method"", ""Experimental section"", ""Experimental details"", ""Experimental part""]";temperature;8
+65;"[""Conclusions"",""Conclusion""]";temperature;4
+77;"[""highlight""]";temperature;0
+89;"[""Main limitations""]";temperature;0
+101;"[""Improving the properties of bioplastics""]";temperature;0
+113;"[""Current applications""]";temperature;0
+125;"[""Main characteristics of different bioplastics""]";temperature;0
+137;"[""Possible application""]";temperature;0
+149;"[""Background""]";temperature;0
+161;"[""Preparation of modified clays""]";temperature;0
+6;"[""abstract""]";thickness;6
+18;"[""Introduction""]";thickness;7
+30;"[""Materials and methods"",""Material and methods"",""Materials""]";thickness;9
+42;"[""Results and discussion"",""Results and discussions"",""Result and discussion"",""Results"",""Discussion""]";thickness;5
+54;"[""Experimental material and method"",""Experimental"", ""Experimental and characterization method"", ""Experimental section"", ""Experimental details"", ""Experimental part""]";thickness;8
+66;"[""Conclusions"",""Conclusion""]";thickness;4
+78;"[""highlight""]";thickness;0
+90;"[""Main limitations""]";thickness;0
+102;"[""Improving the properties of bioplastics""]";thickness;0
+114;"[""Current applications""]";thickness;0
+126;"[""Main characteristics of different bioplastics""]";thickness;0
+138;"[""Possible application""]";thickness;0
+150;"[""Background""]";thickness;0
+162;"[""Preparation of modified clays""]";thickness;0
